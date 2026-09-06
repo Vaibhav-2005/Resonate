@@ -9,4 +9,4 @@ initializeSockets(server);
 
 server.listen(PORT, () => {
     console.log(`🚀 Resonate Backend running on port ${PORT}`);
-});
+}); 
