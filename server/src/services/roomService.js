@@ -15,13 +15,13 @@ export const handleRoomEvents = (io, socket) => {
         });
 
         socket.join(roomId);
-        rooms.get(roomId).members.set(socket.id, { socketId: socket.id, isHost: true });
+        rooms.get(roomId).members.set(socket.id, { socketId: socket.id, isHost: true, displayName: 'Host'});
 
         console.log(`[🟢 Room] Host ${socket.id} created party: ${roomId}`);
         callback({ success: true, roomId });
     });
 
-    socket.on('room:join', (roomId, callback) => {
+    socket.on('room:join', ({ roomId, displayName }, callback) => {
         if (!rooms.has(roomId)) {
             console.log(`[🔴 Room] ${socket.id} tried to join non-existent room: ${roomId}`);
             return callback({ success: false, message: 'Party code not found.' });
@@ -29,20 +29,19 @@ export const handleRoomEvents = (io, socket) => {
 
         socket.join(roomId);
         const room = rooms.get(roomId);
-        room.members.set(socket.id, { socketId: socket.id, isHost: false });
+        room.members.set(socket.id, { socketId: socket.id, isHost: false, displayName: displayName || 'Guest' });
 
         console.log(`[🟢 Room] Guest ${socket.id} joined party: ${roomId}`);
 
-        // notify existing members only, not the joiner
         socket.to(roomId).emit('room:user_joined', {
             userId: socket.id,
             members: Array.from(room.members.values())
         });
 
-        // send joiner current playback state so they can sync immediately
         callback({
             success: true,
             roomId,
+            members: Array.from(room.members.values()),
             track: room.track,
             anchorPositionMs: room.anchorPositionMs,
             anchorServerTime: room.anchorServerTime,

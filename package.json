@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "dotenv": "^17.4.2"
+    "dotenv": "^17.4.2",
+    "react-qr-code": "^2.2.0"
   }
 }

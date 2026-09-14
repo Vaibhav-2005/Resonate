@@ -26,7 +26,6 @@ export function useSocket() {
         return () => {
             socket.off("connect", onConnect);
             socket.off("disconnect", onDisconnect);
-            socket.disconnect();
         };
     }, []);
 
